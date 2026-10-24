@@ -200,6 +200,11 @@ impl Report {
     }
 }
 
+/// "10:00 UTC, 24 Oct" for an hour index (unix time / 3600).
+pub fn hour_label(h: u32) -> String {
+    chrono::DateTime::from_timestamp(h as i64 * 3600, 0).map_or(h.to_string(), |t| t.format("%H:00 UTC, %d %b").to_string())
+}
+
 pub fn short(a: Address) -> String {
     let s = a.to_string();
     format!("{}…{}", &s[..6], &s[s.len() - 4..])

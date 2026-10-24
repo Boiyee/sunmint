@@ -130,7 +130,8 @@ fn view(app: &App, c: &CertRow) -> CertView {
 }
 
 fn site_json(s: &Site, slug: &str) -> Value {
-    json!({ "slug": slug, "name": s.name, "country": s.country, "lat": s.lat, "lon": s.lon, "device": s.device,
+    let utc_offset = demo::by_slug(slug).map_or((s.lon / 15.0).round() as i32, |d| d.utc_offset);
+    json!({ "slug": slug, "utc_offset": utc_offset, "name": s.name, "country": s.country, "lat": s.lat, "lon": s.lon, "device": s.device,
             "capacity_w": s.capacity_w, "has_generator": s.has_generator, "grid_factor": demo::grid_factor(&s.country) })
 }
 

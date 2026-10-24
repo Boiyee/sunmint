@@ -6,7 +6,7 @@ use alloy::primitives::Bytes;
 use serde::Serialize;
 use sunmint_core::{
     Reading, SignedClaim, SignedReading, attest,
-    checks::{Report, Status, check_claim, check_reading, honest_claim},
+    checks::{Report, Status, check_claim, check_reading, hour_label, honest_claim},
     demo::{self, DemoSite},
     sign, solar,
 };
@@ -135,7 +135,7 @@ pub async fn run(app: &App, kind: &str) -> Option<Outcome> {
             let (hour, rs) = (1..48).find_map(|back| {
                 let h = hour_now - back;
                 let rs: Vec<_> = app.store.lock().unwrap().hour_readings(dev, h).into_iter().map(|(r, _)| r).collect();
-                (rs.len() >= 6 && rs.iter().all(|r| r.gridV >= 50)).then_some((h, rs))
+                (rs.len() >= 6 && rs.iter().map(|r| r.wh).sum::<u32>() > 500 && rs.iter().all(|r| r.gridV >= 50)).then_some((h, rs))
             })?;
             let mut c = honest_claim(dev, hour, &rs);
             c.gridDown = true;
@@ -145,7 +145,7 @@ pub async fn run(app: &App, kind: &str) -> Option<Outcome> {
             Outcome {
                 kind: "blackout",
                 title: "Fake a blackout".into(),
-                how: format!("Claim {}'s generator was displaced in hour {hour} while its signed grid channel shows the grid was up.", s.name),
+                how: format!("Claim {}'s generator was displaced at {} while its signed grid channel shows the grid was up.", s.name, hour_label(hour)),
                 note: "GEN claimed, readings say grid up".into(),
                 payload: vec![f("device", dev, false), f("hour", hour, false), f("wh", c.wh, false), f("gridDown", true, true), f("readingsRoot", c.readingsRoot, false)],
                 report,
@@ -179,7 +179,7 @@ pub async fn run(app: &App, kind: &str) -> Option<Outcome> {
             Outcome {
                 kind: "double",
                 title: "Mint the same hour twice".into(),
-                how: format!("Send a second, perfectly honest claim for {}'s hour {}, which is already minted.", s.name, cert.hour),
+                how: format!("Send a second, perfectly honest claim for {}'s {}, which is already minted.", s.name, hour_label(cert.hour)),
                 note: "second claim for a minted hour".into(),
                 payload: vec![f("device", dev, false), f("hour", cert.hour, true), f("wh", c.wh, false), f("gridDown", c.gridDown, false), f("readingsRoot", c.readingsRoot, false)],
                 report,

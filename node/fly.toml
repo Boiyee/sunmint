@@ -1,0 +1,23 @@
+app = "sunmint-verifier"
+primary_region = "lhr"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  CHAIN_ID = "84532"
+  RUST_LOG = "info"
+
+[[mounts]]
+  source = "sunmint_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  min_machines_running = 1
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

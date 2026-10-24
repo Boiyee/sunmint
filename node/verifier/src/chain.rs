@@ -92,7 +92,7 @@ pub enum Chain {
 fn revert_reason(e: &alloy::contract::Error) -> String {
     use SunmintCertificates::SunmintCertificatesErrors as E;
     match e.as_decoded_interface_error::<E>() {
-        Some(E::DeviceHourAlreadyMinted(x)) => format!("revert DeviceHourAlreadyMinted({}, hour {})", sunmint_core::checks::short(x.device), x.hour),
+        Some(E::DeviceHourAlreadyMinted(x)) => format!("revert DeviceHourAlreadyMinted({}, {})", sunmint_core::checks::short(x.device), sunmint_core::checks::hour_label(x.hour)),
         Some(E::BadDeviceSignature(_)) => "revert BadDeviceSignature()".into(),
         Some(E::BadVerifierSignature(_)) => "revert BadVerifierSignature()".into(),
         Some(E::HourNotOver(x)) => format!("revert HourNotOver({})", x.hour),
@@ -132,7 +132,7 @@ impl Chain {
         match self {
             Chain::Dry { minted, seq, .. } => {
                 if !minted.lock().unwrap().insert((c.device, c.hour)) {
-                    return Err(format!("revert DeviceHourAlreadyMinted({}, hour {})", sunmint_core::checks::short(c.device), c.hour));
+                    return Err(format!("revert DeviceHourAlreadyMinted({}, {})", sunmint_core::checks::short(c.device), sunmint_core::checks::hour_label(c.hour)));
                 }
                 Ok(Self::dry_tx(seq))
             }
