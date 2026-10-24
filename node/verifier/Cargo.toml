@@ -1,0 +1,18 @@
+[package]
+name = "sunmint-verifier"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+alloy = { version = "2.5.0", features = ["provider-http", "contract", "signer-local", "sol-types", "network", "rpc-types"] }
+anyhow = "1.0.104"
+axum = "0.8.9"
+chrono = "0.4.45"
+rusqlite = { version = "0.40.2", features = ["bundled", "fallible_uint"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sunmint-core = { version = "0.1.0", path = "../core" }
+tokio = { version = "1.54.1", features = ["full"] }
+tower-http = { version = "0.7.1", features = ["cors"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

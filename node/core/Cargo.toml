@@ -1,0 +1,11 @@
+[package]
+name = "sunmint-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+alloy = { version = "2.5.0", features = ["sol-types", "signer-local", "eip712"] }
+chrono = { version = "0.4.45", features = ["serde"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
